@@ -8,6 +8,8 @@ async fn main() {
 
     args.next();
 
-    let link = args.next().unwrap();
-    extract_srt(&link).await.unwrap();
+    let link = args.next().expect("Need to provide link in arg 2");
+    let format_res = args.next().expect("Need to format text or json in arg 3");
+
+    extract_srt(&link, &format_res).await.unwrap();
 }
