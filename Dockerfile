@@ -12,6 +12,13 @@ COPY . .
 RUN cargo build --release --bin yt-srt-extract
 
 FROM debian:bookworm-slim AS runtime
+
+RUN apt-get update && \
+  apt-get install -y --no-install-recommends \
+  openssl && \
+  apt-get clean && \
+  rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 COPY --from=builder /app/target/release/yt-srt-extract /usr/local/bin
 ENTRYPOINT ["/usr/local/bin/yt-srt-extract"]
