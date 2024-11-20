@@ -1,12 +1,17 @@
 use std::{
     fs::File,
     io::Write,
+    path::Path,
     time::{SystemTime, UNIX_EPOCH},
 };
 
 use youtube_transcript::YoutubeBuilder;
 
-pub async fn extract_srt(url: &str, format_res: &str) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn extract_srt(
+    url: &str,
+    format_res: &str,
+    path_name: &Path,
+) -> Result<(), Box<dyn std::error::Error>> {
     let yt = YoutubeBuilder::default();
     let builder = yt.build();
 
@@ -18,9 +23,11 @@ pub async fn extract_srt(url: &str, format_res: &str) -> Result<(), Box<dyn std:
         "json" => {
             let json = serde_json::to_string_pretty(&srt)?;
 
-            let file_name = format!("results/{}.json", file_name_str);
+            let file_name = format!("{}.json", file_name_str);
 
-            let mut file = File::create(file_name)?;
+            let file_path = path_name.join(&file_name);
+
+            let mut file = File::create(file_path)?;
 
             println!("transcript : {}", &json);
 
@@ -33,13 +40,15 @@ pub async fn extract_srt(url: &str, format_res: &str) -> Result<(), Box<dyn std:
                 .map(|t| t.text)
                 .collect::<Vec<String>>();
 
-            let caption = caption.join(" ");
-            println!("{}", &caption);
+            let res = caption.join(" ");
+            println!("{}", &res);
 
-            let file_name = format!("results/{}.txt", file_name_str);
+            let file_name = format!("{}.txt", file_name_str);
 
-            let mut file = File::create(&file_name)?;
-            file.write_all(caption.as_bytes())?;
+            let file_path = path_name.join(&file_name);
+
+            let mut file = File::create(file_path)?;
+            file.write_all(res.as_bytes())?;
         }
         _ => return Err("Need json or text".into()),
     }
