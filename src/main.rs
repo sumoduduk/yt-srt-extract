@@ -1,5 +1,5 @@
 mod yt_caption;
-use std::env::args;
+use std::{env::args, path::Path};
 use yt_caption::extract_srt;
 
 #[tokio::main]
@@ -9,7 +9,10 @@ async fn main() {
     args.next();
 
     let link = args.next().expect("Need to provide link in arg 2");
-    let format_res = args.next().expect("Need to format text or json in arg 3");
+    let folder_path = args.next().expect("Need to format text or json in arg 3");
+    let format_res = args.next().expect("Need to format text or json in arg 4");
 
-    extract_srt(&link, &format_res).await.unwrap();
+    let folder = Path::new(&folder_path);
+
+    extract_srt(&link, &format_res, folder).await.unwrap();
 }
