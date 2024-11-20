@@ -15,7 +15,8 @@ FROM debian:bookworm-slim AS runtime
 
 RUN apt-get update && \
   apt-get install -y --no-install-recommends \
-  openssl && \
+  openssl \
+  ca-certificates && \
   apt-get clean && \
   rm -rf /var/lib/apt/lists/*
 
